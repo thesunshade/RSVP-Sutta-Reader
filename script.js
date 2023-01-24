@@ -1,4 +1,4 @@
-import { buildSutta } from "./buildSutta.js";
+import buildSutta from "./functions/buildSutta.js";
 
 const startButton = document.getElementById("start");
 const resetButton = document.getElementById("reset");
@@ -9,9 +9,9 @@ const output = document.getElementById("output");
 const status = document.getElementById("status");
 let timer;
 let words = [];
-let cur = 0;
-let last_cur = 0;
-let wpm = 200;
+let currentWord = 0;
+let last_currentWord = 0;
+let wpm = 400;
 let average_word_length = 6;
 let MAJOR_BREAK = /[.!?"“”…]$/;
 let MINOR_BREAK = /[,;:]$/;
@@ -20,6 +20,9 @@ let STARTS = /^[-–—«»"“”]/;
 let running = false;
 const PARAGRAPH_BREAK = "PARAGRAPH_BREAK";
 const SENTENCE_BREAK = "SENTENCE_BREAK";
+const highestSpeed = 800;
+const lowestSpeed = 300;
+const incrementSpeed = 25;
 let skin = "blackoncream";
 
 const form = document.getElementById("get-sutta-form");
@@ -42,7 +45,7 @@ const saveText = () => {
   saveSettings();
 };
 const saveSettings = () => {
-  localStorage.setItem("cur", last_cur);
+  localStorage.setItem("cur", last_currentWord);
   localStorage.setItem("wpm", wpm);
   localStorage.setItem("skin", skin);
   render();
@@ -50,8 +53,8 @@ const saveSettings = () => {
 const loadSettings = () => {
   textarea.value = localStorage.getItem("text") || "";
   if (localStorage.getItem("cur")) {
-    cur = parseInt(localStorage.getItem("cur"));
-    last_cur = cur;
+    currentWord = parseInt(localStorage.getItem("cur"));
+    last_currentWord = currentWord;
     goToLastSentence();
   }
   if (localStorage.getItem("wpm")) {
@@ -87,7 +90,8 @@ speedOption.addEventListener("change", e => {
   saveSettings();
 });
 
-textarea.addEventListener("change", e => {
+textarea.addEventListener("input", e => {
+  console.log("fired");
   // cur = 0
   loadText();
   render();
@@ -131,9 +135,9 @@ document.body.addEventListener("keydown", e => {
     goToLastSentence();
   } else if (e.keyCode === 39) {
     /* Right */
-    for (let i = cur + 1; i < words.length; i++) {
+    for (let i = currentWord + 1; i < words.length; i++) {
       if (words[i] === PARAGRAPH_BREAK || words[i] === SENTENCE_BREAK) {
-        cur = i + 1;
+        currentWord = i + 1;
         next(200);
         break;
       }
@@ -162,12 +166,12 @@ document.body.addEventListener("click", () => {
 });
 
 const goToLastSentence = () => {
-  for (let i = Math.max(0, last_cur - 2); i >= 0; i--) {
+  for (let i = Math.max(0, last_currentWord - 2); i >= 0; i--) {
     if (words[i] === PARAGRAPH_BREAK || words[i] === SENTENCE_BREAK || i === 0) {
       if (i === 0) {
-        cur = i;
+        currentWord = i;
       } else {
-        cur = i + 1;
+        currentWord = i + 1;
       }
       next(350);
       break;
@@ -180,10 +184,10 @@ const goToLastSentence = () => {
 */
 const render = () => {
   if (words.length > 0) {
-    status.style.width = `${(cur / words.length) * 100}%`;
-    startButton.innerHTML = `Continue (${Math.floor((cur / words.length) * 100)}%)`;
+    status.style.width = `${(currentWord / words.length) * 100}%`;
+    startButton.innerHTML = `Continue (${Math.floor((currentWord / words.length) * 100)}%)`;
   }
-  if (cur == 0 || cur == words.length) {
+  if (currentWord == 0 || currentWord == words.length) {
     startButton.innerHTML = "Start";
   }
   skinOption.value = skin;
@@ -193,7 +197,7 @@ const render = () => {
 
   /* Render WPM dropdown */
   let available_speeds = [];
-  for (let i = 25; i <= 600; i += 25) {
+  for (let i = lowestSpeed; i <= highestSpeed; i += incrementSpeed) {
     available_speeds.push(i);
   }
   if (!available_speeds.includes(wpm)) {
@@ -206,8 +210,8 @@ const render = () => {
 };
 
 const reset = () => {
-  cur = 0;
-  last_cur = cur;
+  currentWord = 0;
+  last_currentWord = currentWord;
 };
 
 const loadText = () => {
@@ -226,11 +230,11 @@ const loadText = () => {
 
 const start = () => {
   loadText();
-  if (cur >= words.length) {
+  if (currentWord >= words.length) {
     reset();
   }
   running = true;
-  cur = last_cur; /* Go one back to start on the same word */
+  currentWord = last_currentWord; /* Go one back to start on the same word */
   saveText();
   next(150);
 };
@@ -251,13 +255,13 @@ const timeoutAndNext = (multiplier, add) => {
 const next = add => {
   document.body.setAttribute("data-running", "true");
 
-  if (!document.hasFocus() || cur >= words.length) {
+  if (!document.hasFocus() || currentWord >= words.length) {
     return stop();
   }
-  let word = words[cur];
+  let word = words[currentWord];
   if (word !== PARAGRAPH_BREAK && word !== SENTENCE_BREAK) {
-    for (let i = 1; word.length < 9 && cur + i < words.length; i++) {
-      let word_to_add = words[cur + i];
+    for (let i = 1; word.length < 9 && currentWord + i < words.length; i++) {
+      let word_to_add = words[currentWord + i];
       if (word_to_add === PARAGRAPH_BREAK || word_to_add === SENTENCE_BREAK) {
         break;
       }
@@ -269,7 +273,7 @@ const next = add => {
       ) {
         break;
       }
-      if (words[cur + i].length <= 3 && words[cur + i + 1] && words[cur + i + 1].length > 4) {
+      if (words[currentWord + i].length <= 3 && words[currentWord + i + 1] && words[currentWord + i + 1].length > 4) {
         break;
       }
       word += " " + word_to_add;
@@ -285,19 +289,19 @@ const next = add => {
   }
   multiplier = clamp(multiplier, minMultiplier, 1.8);
   // console.log({ word, multiplier })
-  last_cur = cur;
-  cur = cur + word.split(" ").length;
+  last_currentWord = currentWord;
+  currentWord = currentWord + word.split(" ").length;
   if (word === PARAGRAPH_BREAK) {
     word = "";
     multiplier = 2;
   } else if (word === SENTENCE_BREAK) {
     word = "";
-    multiplier = 5;
+    multiplier = 2;
     // the two lines below were commented out. Not sure if they work.
-  } else if (MAJOR_BREAK.test(word) && words[cur + 1] !== PARAGRAPH_BREAK) {
-    multiplier = 5;
+  } else if (MAJOR_BREAK.test(word) && words[currentWord + 1] !== PARAGRAPH_BREAK) {
+    multiplier = 2;
   } else if (MINOR_BREAK.test(word)) {
-    multiplier = 5.4;
+    multiplier = 2.4;
   }
   // output.innerHTML = `<div id="spacer"></div>`
   // + `<div id="word">${word}</div>`
@@ -317,7 +321,7 @@ const next = add => {
   //   outputWidth,
   //   wordWidth,
   //   leftpad,
-  // })
+  // });
   timeoutAndNext(multiplier, add);
   saveSettings();
 };

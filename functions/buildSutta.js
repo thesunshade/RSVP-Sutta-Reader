@@ -1,4 +1,4 @@
-export function buildSutta(slug) {
+export default function buildSutta(slug) {
   let translator = "sujato";
 
   slug = slug.toLowerCase();
@@ -47,22 +47,15 @@ export function buildSutta(slug) {
         if (/<\/p>/.test(closeHtml) || /<\/h/.test(closeHtml) || /<\/li>/.test(closeHtml)) {
           suttaText += `\n\n`;
         }
-        console.log(closeHtml);
       });
-      console.log(suttaText.replace(/(<([^>]+)>)/gi, ""));
+
       const textarea = document.getElementById("textarea");
-      textarea.value = suttaText.replace(/(<([^>]+)>)/gi, "");
+      console.log(textarea);
+      textarea.value = suttaText.replace(/(<([^>]+)>)/gi, "").replace(/ …/g, "…");
+      const e = new Event("input");
+      textarea.dispatchEvent(e);
     })
     .catch(error => {
-      suttaArea.innerHTML = `<p>Sorry, "${decodeURIComponent(slug)}" is not a valid sutta citation.
-      <br>
-      Try on <a href="https://suttacentral.net/${decodeURIComponent(
-        slug
-      )}/en/sujato" rel="noreferrer" target="_blank">SuttaCentral.net</a> or the <a href="https://sutta.readingfaithfully.org/?q=${decodeURIComponent(
-        slug
-      )}" rel="noreferrer" target="_blank">Citation Helper</a>
-      <br><br>
-      Note: Suttas that are part of a series require that you enter the exact series. For example, <code>an1.1</code> will not work, but <code>an1.1-10</code> will.<br>
-      ${welcomeText}`;
+      console.log(error);
     });
 }
