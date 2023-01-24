@@ -14,6 +14,10 @@
     <div id=setup>
       <h1><span>Speed reader</span></h1>
       <div id=noclick>
+        <form id="get-sutta-form">
+          <input id="citation" type="text" placeholder="Enter citation"><input class="go-button" type="submit"
+            value="Go">
+        </form>
         <textarea id=textarea placeholder="Write text..."></textarea>
         <div>
           <label for="wpm">Speed:</label>
@@ -23,25 +27,26 @@
         <div>
           <label for="skin">Colors:</label>
           <select id=skin>
-          <option value="blackonwhite">Black on white</option>
-          <option value="blackoncream" selected>Black on light</option>
-          <option value="whiteonblack">White on black</option>
-          <option value="yellowonblack">Yellow on black</option>
-        </select>
+            <option value="blackonwhite">Black on white</option>
+            <option value="blackoncream" selected>Black on light</option>
+            <option value="whiteonblack">White on black</option>
+            <option value="yellowonblack">Yellow on black</option>
+          </select>
         </div>
         <div>
           <button id="start">Start</button>
           <button id="reset">Restart</button>
         </div>
         <div id=tutorial class="gray">
-          Click "space" to pause and start, <br/> "left" and "right" arrow buttons to go backwards and forwards,<br/> "up" and "down" arrow buttons to change speed.
+          Click "space" to pause and start, <br /> "left" and "right" arrow buttons to go backwards and forwards,<br />
+          "up" and "down" arrow buttons to change speed.
         </div>
       </div>
     </div>
-    <div id=output></div>
+    <div id=output class="output-area"></div>
     <div id=status></div>
   </main>
 </body>
-<script type="text/javascript" src="script.js?build=00000"></script>
+<script type="module" src="script.js"></script>
 
 </html>

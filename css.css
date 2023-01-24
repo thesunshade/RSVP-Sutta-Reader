@@ -7,6 +7,7 @@ body {
   box-sizing: border-box;
   margin: 0;
   cursor: pointer;
+  font-family: 'Fira Sans';
 }
 
 body[data-running] {
@@ -15,7 +16,7 @@ body[data-running] {
 }
 
 body[data-showcursor] {
-  cursor: pointer!important;
+  cursor: pointer !important;
 }
 
 body[data-running] #setup {
@@ -56,6 +57,12 @@ body:not([data-running]) main {
   padding: 10px 0;
   max-width: inherit;
   width: 100%;
+}
+
+.output-area {
+  background-color: lightblue;
+  min-height: 2rem;
+  border: solid 5px gainsboro
 }
 
 #output #word {
@@ -115,6 +122,7 @@ body[data-skin=yellowonblack] #output {
 #tutorial {
   padding: 10px 0;
 }
+
 .gray {
   opacity: 0.7;
   font-family: sans-serif;
