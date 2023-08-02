@@ -306,7 +306,7 @@ const next = add => {
   // output.innerHTML = `<div id="spacer"></div>`
   // + `<div id="word">${word}</div>`
   output.innerHTML = `<span id="word" style="opacity:0">${word}</span>`;
-  const outputWidth = output.getBoundingClientRect().width;
+  const outputWidth = output.getBoundingClientRect().width - 10;
   const w = document.getElementById("word");
   const wordWidth = w.getBoundingClientRect().width;
   let leftpad = (outputWidth - wordWidth * 0.6) / 2 - 10;
@@ -315,7 +315,9 @@ const next = add => {
   }
   w.setAttribute(
     "style",
-    `display:block;width:${Math.ceil(wordWidth)}px;margin-left:${Math.floor(Math.max(0, leftpad))}px`
+    `display:block;
+    width:${Math.ceil(wordWidth)}px;
+    margin-left:${Math.floor(Math.max(0, leftpad))}px`
   );
   // console.log({
   //   outputWidth,
