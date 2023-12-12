@@ -25,6 +25,7 @@ const lowestSpeed = 300;
 const incrementSpeed = 25;
 let skin = "blackoncream";
 
+localStorage.setItem("cur", 0);
 const form = document.getElementById("get-sutta-form");
 const citation = document.getElementById("citation");
 citation.focus();
@@ -204,9 +205,7 @@ const render = () => {
     available_speeds.push(wpm);
     available_speeds = available_speeds.sort((a, b) => a - b);
   }
-  speedOption.innerHTML = available_speeds
-    .map(j => `<option value="${j}" ${j === wpm ? "selected" : ""}>${j} words per minute</option>`)
-    .join("");
+  speedOption.innerHTML = available_speeds.map(j => `<option value="${j}" ${j === wpm ? "selected" : ""}>${j} words per minute</option>`).join("");
 };
 
 const reset = () => {
@@ -265,12 +264,7 @@ const next = add => {
       if (word_to_add === PARAGRAPH_BREAK || word_to_add === SENTENCE_BREAK) {
         break;
       }
-      if (
-        word_to_add === undefined ||
-        word.length + word_to_add.length > 8 ||
-        ENDS.test(word) ||
-        STARTS.test(word_to_add)
-      ) {
+      if (word_to_add === undefined || word.length + word_to_add.length > 8 || ENDS.test(word) || STARTS.test(word_to_add)) {
         break;
       }
       if (words[currentWord + i].length <= 3 && words[currentWord + i + 1] && words[currentWord + i + 1].length > 4) {
