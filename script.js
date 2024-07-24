@@ -255,6 +255,13 @@ const next = add => {
   document.body.setAttribute("data-running", "true");
 
   if (!document.hasFocus() || currentWord >= words.length) {
+    if (currentWord === words.length) {
+      // Call your function here
+      // console.log("finished");
+      // running = false;
+      // timer && clearTimeout(timer);
+      // return;
+    }
     return stop();
   }
   let word = words[currentWord];
@@ -273,7 +280,7 @@ const next = add => {
       word += " " + word_to_add;
     }
   }
-  // console.log(word)
+
   const minMultiplier = 0.65;
   // const maxMultiplier = 1.5
   // const longestWord = 12
@@ -282,7 +289,7 @@ const next = add => {
     multiplier = multiplier ** 1.4;
   }
   multiplier = clamp(multiplier, minMultiplier, 1.8);
-  // console.log({ word, multiplier })
+
   last_currentWord = currentWord;
   currentWord = currentWord + word.split(" ").length;
   if (word === PARAGRAPH_BREAK) {
@@ -297,8 +304,7 @@ const next = add => {
   } else if (MINOR_BREAK.test(word)) {
     multiplier = 2.4;
   }
-  // output.innerHTML = `<div id="spacer"></div>`
-  // + `<div id="word">${word}</div>`
+
   output.innerHTML = `<span id="word" style="opacity:0">${word}</span>`;
   const outputWidth = output.getBoundingClientRect().width - 10;
   const w = document.getElementById("word");
@@ -313,11 +319,7 @@ const next = add => {
     width:${Math.ceil(wordWidth)}px;
     margin-left:${Math.floor(Math.max(0, leftpad))}px`
   );
-  // console.log({
-  //   outputWidth,
-  //   wordWidth,
-  //   leftpad,
-  // });
+
   timeoutAndNext(multiplier, add);
   saveSettings();
 };
